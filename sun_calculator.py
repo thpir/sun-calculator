@@ -1,5 +1,5 @@
 import math
-import datetime
+import datetime as dt
 
 class SunCalculator:
     def __init__(self):
@@ -9,7 +9,7 @@ class SunCalculator:
         self.J2000 = 2451545.0
         self.earth_obliquity = self.RAD * 23.4397
 
-    def __calculate_days(self, date: datetime.datetime):
+    def __calculate_days(self, date: dt.datetime):
         return self.__to_julian(date) - self.J2000
     
     # This part calculates the mean anomaly of the sun. The mean 
@@ -64,14 +64,16 @@ class SunCalculator:
     def __altitude(self, hour_angle, lat_in_radians, declination):
         return math.asin(math.sin(lat_in_radians) * math.sin(declination) + math.cos(lat_in_radians) * math.cos(declination) * math.cos(hour_angle))
 
-    def __to_julian(self, date: datetime.datetime):
+    def __to_julian(self, date: dt.datetime):
         return (date.timestamp() * 1000) / self.ms_per_day - 0.5 + self.J1970
 
-    # This method calculates the position 
-    # of the sun at a given date and location.
-    # The altitude is in radians, where 0 is on the horizon and + is above horizon, - is below horizon.
-    # The azimuth is in radians, where 0 is south, pi/2 is west, -pi/2 is east, and pi is north.
-    def get_position(self, date: datetime, lat: float, lng: float):
+    """    
+    This method calculates the position 
+    of the sun at a given date and location.
+    The altitude is in radians, where 0 is on the horizon and + is above horizon, - is below horizon.
+    The azimuth is in radians, where 0 is south, pi/2 is west, -pi/2 is east, and pi is north.
+    """
+    def get_position(self, date: dt, lat: float, lng: float):
         lng_west_in_radians = lng * -1 * self.RAD
         lat_in_radians = lat * self.RAD
         days_since_epoch = self.__calculate_days(date)
@@ -96,5 +98,5 @@ if __name__ == "__main__":
     date = input("Enter date and time (in format: 2025-02-11 11:25:18): ") # "2025-02-11 11:25:18"
     latitude = input("Enter latitude: ") # 51.21131496342009 = Brugge
     longitude = input("Enter longitude: ") # 3.2258847770102235 = Brugge
-    output = calculator.get_position(datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S"), float(latitude), float(longitude))
+    output = calculator.get_position(dt.datetime.strptime(date, "%Y-%m-%d %H:%M:%S"), float(latitude), float(longitude))
     print("On {0}, at latitude: {1} and logitude: {2}, the sun is at\n a) azimuth: {3} \n b) altitude: {4}".format(date, latitude, longitude, output["azimuth"], output["altitude"]))
